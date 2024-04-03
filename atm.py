@@ -5,7 +5,7 @@
   # set current balance of checking/savings up to change variable value after user input each time program runs it needs to be based of transaction history. 
  # keep menu popping up after any action by user. Thinking of doing a Class or while loop
 
-def which_account():
+def which_account() -> int:
   #ask for user input then loop through until there is a valid entry
   while True:
     print ("1 = Checkings")
@@ -24,7 +24,7 @@ def choice_for_change(): # this does not check for error and lets user put whate
     output = savings_account 
   return output 
 
-def menu():
+def menu() -> int:
   # display menu options and check for input error
   while True:
     print ("1 = Deposit")
@@ -70,18 +70,24 @@ match option:
     
   case 3: # Check Balance
     output = which_account()
-
-    if output == 1:
-      print(checkings_account)
-    elif output == 2:
-      print(savings_account)
-    while output > 2: #unrealistic because you can't enter negative on keypad at ATM
-      print("Not a Valid Entry")
-      output = which_account()
+    while True:
       if output == 1:
         print(checkings_account)
+        break #exits loop after balance is printed
       elif output == 2:
         print(savings_account)
+        break #exits loop after balance is printed
+      else:
+        print("Not a Valid Entry")
+    
+    while True: #continue to work, want to loop through menu regardless of case but also give user option to continue or not
+      output = int(input("Continue to Menu? 1 = Yes or 2 = No "))
+      if output == 1:
+        menu()
+      elif output == 2:
+        break
+      else:
+        print("Invalid Input. Please try again. ")
 
     
     
