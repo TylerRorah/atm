@@ -2,21 +2,26 @@
 
 #functionality that i would like to add
   # set a limit to amount an individual can deposit through 1 transaction
-  # set current balance of checking/savings up to change variable value after user input each time program runs it needs to be based of transaction history. 
+  # set current balance of checking/savings up to change variable value after user input each time program runs it needs to be based off transaction history. 
  # keep menu popping up after any action by user. Thinking of doing a Class or while loop
 
+ 
 def which_account() -> int:
   #ask for user input then loop through until there is a valid entry
   while True:
     print ("1 = Checkings")
     print ("2 = Savings")
-    output = int(input("Enter a Number: "))
-    if output == 1 or output == 2:
-      return output
-    else:
-      print("Please Try Again. ")
+    try:
+      output = int(input("Enter a Number 1 or 2: "))
+      if output == 1 or output == 2:
+        return output
+      else:
+        print("Please Try Again. ")
+    except ValueError:
+      print("Invalid input. Please enter a valid number. ")
+
   
-def choice_for_change(): # this does not check for error and lets user put whatever
+def choice_for_change():
   choice = which_account() 
   if choice == 1:
     output = checkings_account
@@ -31,67 +36,81 @@ def menu() -> int:
     print ("2 = Withdrawl")
     print ("3 = Check Balance")
     print ("4 = Transfer")
-    option = int(input("Enter a Number (1:4): " ))
-    if option >= 1 and option <= 4:
-      return option
-    else:
-      print("Please Try Again. ")
+    print ("5 = Exit")
+    try:
+      option = int(input("Enter a Number (1:5): " ))
+      if option >= 1 and option <= 5:
+        return option
+      else:
+        print("Please Try Again. ")
+    except ValueError:
+      print("Invalid input. Please enter a number. ")
   
-option = menu()
 checkings_account = 1000
 savings_account = 3000
 
-match option:
-  case 1: # Deposit
-    print ("Deposit: Which Account?")
-    output = choice_for_change() 
-    
-    def deposit_funds(output):
-      funds = int(input("How much would you like to deposit? $"))
-      current_balance = funds + output
-      print (f"New Balance is ${current_balance}.")
-      return current_balance 
-      
-    deposit_funds(output) # might be an issue
-    menu() 
-    
-  case 2: # Withdrawl
-    print("Withdrawl: Which Account? ")
-    output = choice_for_change()
+while True:
 
-    def withdrawl_funds(output):
-      funds = int(input("How much would you like to deposit? $"))
-      current_balance = funds - output
-      print (f"New Balance is {current_balance}.")
-      return current_balance 
+  option = menu()
+
+  match option:
+    case 1: # Deposit
+      print ("Deposit: Which Account?")
+      output = choice_for_change() 
       
-    withdrawl_funds(output)
-    menu() 
+      def deposit_funds(output) -> int: # passes output through the deposit funds function
+        while True:
+          try: 
+            funds = int(input("How much would you like to deposit? $"))
+            if 0 < funds > 5000: # set a maximum and minimum limit for deposit
+              print ("Maximum Limit Per Transaction = $5000")
+              print ("Minimum Limit Per Transaction = $1")
+              print ("Please Try Again. ")
+            else:
+              current_balance = funds + output
+              print (f"New Balance is ${current_balance}.")
+              return current_balance
+          except ValueError:
+            print("Invalid input. Please enter a number. ")
+         
+      
+      deposit_funds(output) # might be an issue
     
-  case 3: # Check Balance
-    output = which_account()
-    while True:
+    case 2: # Withdrawl
+      print("Withdrawl: Which Account? ")
+      output = choice_for_change()
+
+      def withdrawl_funds(output):
+        funds = int(input("How much would you like to deposit? $"))
+        current_balance = funds - output
+        print (f"New Balance is {current_balance}.")
+        return current_balance 
+        
+      withdrawl_funds(output)
+    
+    case 3: # Check Balance
+      output = which_account()
       if output == 1:
         print(checkings_account)
-        break #exits loop after balance is printed
       elif output == 2:
         print(savings_account)
-        break #exits loop after balance is printed
-      else:
-        print("Not a Valid Entry")
-    
-    while True: #continue to work, want to loop through menu regardless of case but also give user option to continue or not
-      output = int(input("Continue to Menu? 1 = Yes or 2 = No "))
-      if output == 1:
-        menu()
-      elif output == 2:
-        break
-      else:
-        print("Invalid Input. Please try again. ")
 
-    
-    
-  case 4: # Transfer
-    print ("You chose transfer")
-  case anything_else:
-    print ("Please Try Again")
+    case 4: # Transfer
+      print ("You chose transfer. ")
+      while True:
+        print ("Please choose which account. ")
+        which_account() # have user choose account 1 or 2 then assign that to output
+        choice_for_change() # takes output and assigns it to checking or saving
+        try:
+          transfer_amount = int(input("How much would you like to Transfer? "))
+          if 0 < transfer_amount <= choice_for_change():
+            # do something with the valid transfer amount
+            pass
+          else:
+            print("Invalid Transfer Amount. Please Try Again. ")
+        except ValueError:
+          print("Please enter a valid number for the transfer amount. ")
+
+    case 5: #Exit
+      print ("Thank You. Have A Great Day! ")
+      break
