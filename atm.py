@@ -81,7 +81,7 @@ while True:
       output = choice_for_change()
 
       def withdrawl_funds(output):
-        funds = int(input("How much would you like to deposit? $"))
+        funds = int(input("How much would you like to Withdrawl? $")) #changed deposit to withdrawl since this is the withdrawl case.
         current_balance = funds - output
         print (f"New Balance is {current_balance}.")
         return current_balance 
@@ -89,18 +89,18 @@ while True:
       withdrawl_funds(output)
     
     case 3: # Check Balance
+      print("Check Balance: Which Account?")  #follows case 1 and 2 format
       output = which_account()
       if output == 1:
-        print(checkings_account)
+        print(f"Checkings Balance: ${checkings_account}")
       elif output == 2:
-        print(savings_account)
+        print(f"Savings Balance: ${savings_account}") #changes the way the checking and savings balance is returned to user
 
     case 4: # Transfer
-      print ("You chose transfer. ")
+      #there is still a loop with the transfer. This makes a more smoother transition into the transfer case without the double question of which account.
       while True:
-        print ("Please choose which account. ")
-        which_account() # have user choose account 1 or 2 then assign that to output
-        choice_for_change() # takes output and assigns it to checking or saving
+        print ("Transfer: Which Account?")
+        choice_for_change() 
         try:
           transfer_amount = int(input("How much would you like to Transfer? "))
           if 0 < transfer_amount <= choice_for_change():
