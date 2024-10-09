@@ -1,4 +1,5 @@
 import json
+import tkinter as tk
 
 def load_account_balances() -> dict:
     try:
