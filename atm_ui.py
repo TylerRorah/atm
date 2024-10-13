@@ -1,7 +1,7 @@
 #atm user interface code here
 
 import tkinter as tk
-from atm import load_account_balances, get_current_account_balances, update_account_balance
+from utility import load_account_balances, get_current_account_balances, update_account_balance
 
 class ATMUI:
     def __init__(self, root):
