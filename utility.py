@@ -2,40 +2,48 @@
 import json
 def deposit_funds(account_type: str) -> int:
     """Deposit funds into an account."""
-    deposit_amount = handle_invalid_input("How much would you like to deposit? $")
-    if 1 <= deposit_amount <= 5000:
-        new_balance = get_balance(account_type) + deposit_amount
-        print(f"New balance is ${new_balance}.")
-        update_account_balance(account_type, new_balance)
-        return new_balance  # Return the new balance
+    while True:
+        deposit_amount = handle_invalid_input("How much would you like to deposit? $")
+        if deposit_amount <= 0:
+            print("Invalid input. Please enter a positive number.")
+        elif deposit_amount > 5000:
+            print("Deposit amount exceeds the limit of $5000. Please enter a valid amount.")
+        else:
+            new_balance = get_balance(account_type) + deposit_amount
+            print(f"New balance is ${new_balance}.")
+            update_account_balance(account_type, new_balance)
+            return new_balance
             
-def withdraw_funds(account_type: str) -> int: 
+def withdraw_funds(account_type: str) -> int:
     withdrawal_amount = handle_invalid_input("How much would you like to withdraw? $")
-    if 0 < withdrawal_amount <= get_balance(account_type):
-        new_balance = get_balance(account_type) - withdrawal_amount
+    balance = get_balance(account_type)
+    if balance == 0:
+        print("Insufficient funds.")
+    elif 0 < withdrawal_amount <= balance:
+        new_balance = balance - withdrawal_amount
         print(f"New balance is ${new_balance}.")
         update_account_balance(account_type, new_balance)
-        return new_balance  # Return the new balance
+        return new_balance
+    else:
+        print("Invalid withdrawal amount. Please try again.")
         
 
-def get_menu_option() -> int:
-    """
-    Displays menu options and returns the user's selection as an integer.
-    """
+def get_menu_option():
+    menu_options = {
+        "1": "Deposit",
+        "2": "Withdraw",
+        "3": "Check Balance",
+        "4": "Transfer",
+        "5": "Exit"
+    }
     while True:
-        print("1. Deposit")
-        print("2. Withdraw")
-        print("3. Check Balance")
-        print("4. Transfer")
-        print("5. Exit")
-        try:
-            option = int(input("Enter a number (1-5): "))
-            if 1 <= option <= 5:
-                return option
-            else:
-                print("Invalid option. Please try again.")
-        except ValueError:
-            print("Invalid input. Please enter a number.")
+        for option, description in menu_options.items():
+            print(f"{option}. {description}")
+        choice = input("Enter a number (1-5): ")
+        if choice in menu_options:
+            return choice
+        else:
+            print("Invalid choice. Please try again.")
 def get_account_type():
     account_types = {
         "1": "checking",
@@ -51,20 +59,27 @@ def get_account_type():
             print("Invalid choice. Please try again.")
 
 def transfer_funds(account_type_from, account_type_to):
-    print("Transfer from: Which Account?")
-    account_type_from = get_account_type()
-    print("Transfer to: Which Account?")
-    account_type_to = get_account_type()
-    if account_type_from != account_type_to:
-        transfer_amount = handle_invalid_input("How much would you like to Transfer? $")
-        if 0 < transfer_amount <= get_balance(account_type_from):
-            new_balance_from = get_balance(account_type_from) - transfer_amount
-            new_balance_to = get_balance(account_type_to) + transfer_amount
-            update_account_balance(account_type_from, new_balance_from)
-            update_account_balance(account_type_to, new_balance_to)
-            print(f"Transfer successful. New balance in {account_type_from} is ${new_balance_from}. New balance in {account_type_to} is ${new_balance_to}.")
+    balances = get_current_account_balances()
+    if account_type_from == "Checking":
+        balance_from = balances[0]
     else:
-        print("Cannot transfer to the same account. Please try again.")
+        balance_from = balances[1]
+    if account_type_to == "Checking":
+        balance_to = balances[0]
+    else:
+        balance_to = balances[1]
+    while True:
+        try:
+            transfer_amount = int(input("How much would you like to Transfer? $"))
+            if 0 < transfer_amount <= balance_from:
+                new_balance_from = balance_from - transfer_amount
+                new_balance_to = balance_to + transfer_amount
+                print(f"Transfer successful. New balance in {account_type_from} is ${new_balance_from}. New balance in {account_type_to} is ${new_balance_to}.")
+                return new_balance_from, new_balance_to
+            else:
+                print("Invalid transfer amount. Please try again.")
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
 def update_account_balance(account_type, new_balance):
     global checkings_account, savings_account
     if account_type == "checking":
@@ -99,9 +114,9 @@ def load_account_balances() -> dict:
 
 def get_balance(account_type):
     if account_type == "checking":
-        return checkings_account
+        return checkings_account if checkings_account is not None else 0
     elif account_type == "savings":
-        return savings_account
+        return savings_account if savings_account is not None else 0
 
 def get_current_account_balances():
     try:
@@ -117,7 +132,11 @@ def display_account_balance(account_type):
 def handle_invalid_input(prompt):
     while True:
         try:
-            return int(input(prompt))
+            num = int(input(prompt))
+            if num <= 0:
+                print("Invalid input. Please enter a positive number.")
+            else:
+                return num
         except ValueError:
             print("Invalid input. Please enter a valid number.")
 
